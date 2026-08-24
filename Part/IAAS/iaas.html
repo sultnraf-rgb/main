@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IAAS LC UNS — Sultan Rafli</title>
+<meta name="description" content="IAAS LC UNS — Sultan Rafli.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Fraunces:ital,wght@0,400;0,500;1,400;1,500;1,600&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --ink:        #101114;
+    --ink-2:      #3A3C42;
+    --gray-600:   #6B6E76;
+    --gray-400:   #9A9CA3;
+    --gray-200:   #E6E6E9;
+    --gray-100:   #F1F1F3;
+    --bg:         #FFFFFF;
+    --bg-soft:    #F6F6F8;
+    --dark:       #111114;
+    --line:       #E6E6E9;
+    --line-dark:  rgba(255,255,255,0.14);
+
+    --font: 'Inter', -apple-system, sans-serif;
+    --font-serif: 'Fraunces', serif;
+    --container: 1180px;
+    --radius: 20px;
+    --radius-sm: 12px;
+    --ease: cubic-bezier(.22,.61,.36,1);
+  }
+
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  html{ scroll-behavior:smooth; }
+  @media (prefers-reduced-motion: reduce){
+    html{ scroll-behavior:auto; }
+    *{ animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important; scroll-behavior:auto !important; }
+  }
+
+  body{
+    font-family:var(--font);
+    background:linear-gradient(315deg, #ffffff 100%);
+    background-attachment:fixed;
+    color:var(--ink);
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+
+  img{ display:block; max-width:100%; }
+  a{ color:inherit; text-decoration:none; }
+  button{ font-family:inherit; cursor:pointer; border:none; background:none; color:inherit; }
+  section{ position:relative; }
+
+  .container{ max-width:var(--container); margin:0 auto; padding:0 32px; }
+  @media (max-width:640px){ .container{ padding:0 20px; } }
+
+  .reveal{ opacity:0; transform:translateY(18px); transition:opacity .6s var(--ease), transform .6s var(--ease); }
+  .reveal.in-view{ opacity:1; transform:translateY(0); }
+  @media (prefers-reduced-motion: reduce){ .reveal{ opacity:1; transform:none; } }
+
+  .eyebrow{ font-size:13px; font-weight:500; letter-spacing:.01em; color:var(--gray-600); }
+
+  /* ---------- photo placeholders ---------- */
+  .photo-slot{
+    position:relative; width:100%; height:100%;
+    background:var(--bg-soft);
+    border:1.5px dashed var(--gray-200);
+    border-radius:inherit; overflow:hidden;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .photo-slot img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+  .photo-slot__hint{ display:flex; flex-direction:column; align-items:center; gap:8px; color:var(--gray-400); text-align:center; padding:12px; }
+  .photo-slot__hint svg{ width:24px; height:24px; opacity:.6; }
+  .photo-slot__hint span{ font-size:11px; letter-spacing:.03em; opacity:.75; }
+  .photo-slot:has(img[src]:not([src=""])){ border-color:transparent; background:none; }
+  .photo-slot:has(img[src]:not([src=""])) .photo-slot__hint{ display:none; }
+
+  /* ============================================================
+     HEADER / NAV
+     ============================================================ */
+  header{
+    position:fixed; top:0; left:0; right:0; z-index:100;
+    background:rgba(255,255,255,0.86);
+    backdrop-filter:blur(10px);
+    -webkit-backdrop-filter:blur(10px);
+    border-bottom:1px solid transparent;
+    transition:border-color .3s var(--ease);
+  }
+  header.scrolled{ border-bottom-color:var(--line); }
+  .nav{ display:flex; align-items:center; justify-content:space-between; height:76px; }
+  .nav__back{
+    display:flex; align-items:center; gap:8px;
+    font-size:14.5px; font-weight:600; color:var(--ink);
+  }
+  .nav__back svg{ width:16px; height:16px; transition:transform .25s var(--ease); }
+  .nav__back:hover svg{ transform:translateX(-3px); }
+  .nav__links{ display:flex; align-items:center; gap:38px; }
+  .nav__links a{
+    font-size:14.5px; font-weight:500; color:var(--gray-600);
+    position:relative; padding:4px 0; transition:color .25s;
+  }
+  .nav__links a::after{
+    content:""; position:absolute; left:0; bottom:-2px;
+    width:0; height:1.5px; background:var(--ink);
+    transition:width .3s var(--ease);
+  }
+  .nav__links a:hover{ color:var(--ink); }
+  .nav__links a:hover::after{ width:100%; }
+
+  .nav__toggle{ display:none; flex-direction:column; gap:5px; padding:8px; }
+  .nav__toggle span{ width:24px; height:2px; background:var(--ink); transition:transform .3s, opacity .3s; }
+  .nav__toggle.open span:nth-child(1){ transform:translateY(7px) rotate(45deg); }
+  .nav__toggle.open span:nth-child(2){ opacity:0; }
+  .nav__toggle.open span:nth-child(3){ transform:translateY(-7px) rotate(-45deg); }
+
+  @media (max-width:760px){
+    .nav__toggle{ display:flex; }
+    .nav__links{
+      position:fixed; top:76px; left:0; right:0;
+      flex-direction:column; align-items:flex-start; gap:0;
+      background:var(--bg); border-bottom:1px solid var(--line);
+      max-height:0; overflow:hidden; transition:max-height .35s var(--ease);
+    }
+    .nav__links.open{ max-height:260px; }
+    .nav__links a{ width:100%; padding:16px 20px; border-top:1px solid var(--line); }
+    .nav__links a::after{ display:none; }
+  }
+
+  /* ============================================================
+     SLIDESHOW HERO
+     ============================================================ */
+  .story-hero{ padding:110px 0 0; }
+  .slideshow{
+    border-radius:var(--radius);
+    overflow:hidden; position:relative;
+    aspect-ratio:16/8.6;
+    background:var(--bg-soft);
+    border:1px solid var(--line);
+  }
+  .slideshow__track{ display:flex; height:100%; transition:transform .55s var(--ease); }
+  .slideshow__slide{ flex:0 0 100%; height:100%; position:relative; }
+  .slideshow__slide .photo-slot{ border-radius:0; border:none; }
+
+  .slideshow__nav{
+    position:absolute; top:50%; transform:translateY(-50%);
+    width:44px; height:44px; border-radius:50%;
+    background:#fff; border:1px solid var(--line);
+    display:flex; align-items:center; justify-content:center;
+    color:var(--ink);
+    transition:background .25s, transform .2s;
+    z-index:5;
+  }
+  .slideshow__nav:hover{ background:var(--ink); color:#fff; }
+  .slideshow__nav.prev{ left:16px; }
+  .slideshow__nav.next{ right:16px; }
+  .slideshow__nav svg{ width:16px; height:16px; }
+
+  /* ============================================================
+     TITLE + STAT LINE
+     ============================================================ */
+  .story-head{ padding:40px 0 8px; }
+  .story-head__title{
+    font-weight:800;
+    font-size:clamp(28px, 3.6vw, 42px);
+    letter-spacing:-0.015em;
+  }
+  .story-head__stats{
+    margin-top:18px;
+    display:flex; flex-wrap:wrap; gap:10px 28px;
+  }
+  .story-head__stats span{
+    font-size:13.5px; color:var(--gray-600);
+    display:flex; align-items:center; gap:7px;
+  }
+  .story-head__stats span::before{
+    content:""; width:5px; height:5px; border-radius:50%;
+    background:var(--gray-400); flex-shrink:0;
+  }
+
+  /* ============================================================
+     OVERVIEW
+     ============================================================ */
+  .story-overview{ padding:34px 0 20px; }
+  .story-overview p{
+    font-size:16.5px; line-height:1.8; color:var(--ink-2);
+    max-width:760px;
+  }
+  .story-overview p + p{ margin-top:16px; }
+
+  /* ============================================================
+     STATS STRIP
+     ============================================================ */
+  .stats-strip{
+    margin:12px 0 8px;
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:24px;
+    padding:28px 0;
+    border-top:1px solid var(--line);
+    border-bottom:1px solid var(--line);
+  }
+  .stats-strip__item .num{
+    font-family:var(--font-serif); font-style:italic; font-weight:500;
+    font-size:30px; color:var(--ink);
+  }
+  .stats-strip__item .label{
+    font-size:12.5px; color:var(--gray-600); margin-top:4px;
+  }
+  @media (max-width:640px){ .stats-strip{ grid-template-columns:repeat(2,1fr); } }
+
+  /* ============================================================
+     ACKNOWLEDGMENT (quote callout)
+     ============================================================ */
+  .ack{ padding:8px 0 20px; }
+  .ack blockquote{
+    border-left:2px solid var(--gray-200);
+    padding-left:24px;
+    font-family:var(--font-serif); font-style:italic; font-weight:400;
+    font-size:17px; line-height:1.75; color:var(--ink-2);
+    max-width:740px;
+  }
+
+  /* ============================================================
+     RELATED
+     ============================================================ */
+  .related{ padding:44px 0 100px; }
+  .related__head{ margin-bottom:24px; }
+  .related__head h2{
+    font-weight:800;
+    font-size:clamp(22px, 2.6vw, 28px);
+    letter-spacing:-0.01em;
+  }
+  .related__list{ display:flex; flex-direction:column; gap:12px; }
+  .related__item{
+    display:flex; align-items:center; justify-content:space-between; gap:20px;
+    padding:18px 20px;
+    border:1px solid var(--line); border-radius:var(--radius-sm);
+    transition:border-color .25s, background .25s, transform .25s var(--ease);
+  }
+  .related__item:hover{ border-color:var(--ink); background:#fff; transform:translateX(4px); }
+  .related__item-text{ min-width:0; }
+  .related__item-title{
+    font-size:14.5px; font-weight:600; color:var(--ink);
+    display:-webkit-box; -webkit-line-clamp:1; -webkit-box-orient:vertical; overflow:hidden;
+  }
+  .related__item-domain{ font-size:12.5px; color:var(--gray-400); margin-top:4px; }
+  .related__item svg{ width:16px; height:16px; flex-shrink:0; color:var(--gray-400); transition:transform .25s var(--ease); }
+  .related__item:hover svg{ transform:translate(3px,-3px); color:var(--ink); }
+
+  /* ============================================================
+     FOOTER
+     ============================================================ */
+  footer{ background:var(--dark); color:#fff; padding:44px 0; margin-top:60px; }
+  .footer__row{ display:flex; align-items:center; justify-content:space-between; gap:28px; flex-wrap:wrap; }
+  .footer__name{ font-weight:700; font-size:22px; }
+  .footer__meta{ margin-top:14px; display:flex; flex-direction:column; gap:8px; }
+  .footer__meta a, .footer__meta span{
+    font-size:13.5px; color:rgba(255,255,255,0.62);
+    display:flex; align-items:center; gap:8px; transition:color .2s;
+  }
+  .footer__meta a:hover{ color:#fff; }
+  .footer__meta svg{ width:14px; height:14px; flex-shrink:0; opacity:.8; }
+
+  .footer__right{ display:flex; flex-direction:column; align-items:flex-end; }
+  .footer__social{ display:flex; gap:16px; }
+  .footer__social a{
+    width:52px; height:52px; border-radius:50%;
+    border:1px solid var(--line-dark);
+    display:flex; align-items:center; justify-content:center;
+    transition:background .25s, border-color .25s;
+  }
+  .footer__social a:hover{ background:#fff; border-color:#fff; color:var(--dark); }
+  .footer__social svg{ width:22px; height:22px; }
+
+  .footer__copyright{
+    margin-top:28px; padding-top:20px;
+    border-top:1px solid var(--line-dark);
+    font-size:12.5px; color:rgba(255,255,255,0.4);
+  }
+
+  @media (max-width:640px){
+    .footer__row{ flex-direction:column; }
+    .footer__right{ align-items:flex-start; width:100%; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     HEADER
+============================================================ -->
+<header id="siteHeader">
+  <div class="container nav">
+    <a href="../../index.html#expTrackWrap" class="nav__back">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      Back
+    </a>
+    <nav class="nav__links" id="navLinks">
+      <a href="../../index.html#about">About</a>
+      <a href="../../index.html#experience">Experience</a>
+      <a href="../../index.html#contact">Contact</a>
+    </nav>
+    <button class="nav__toggle" id="navToggle" aria-label="Open menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<!-- ============================================================
+     HERO SLIDESHOW — 🖼️ 8 slot foto, isi src di masing-masing img
+============================================================ -->
+<section class="story-hero">
+  <div class="container">
+    <div class="slideshow reveal" id="slideshow">
+      <div class="slideshow__track" id="slideTrack">
+        <div class="slideshow__slide"><div class="photo-slot"><img src="0.jpg" alt="IAAS LC UNS foto 1"><div class="photo-slot__hint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M21 16l-5-5-4 4-3-3-5 5"/></svg><span>Foto 1 / 8</span></div></div></div>
+        <div class="slideshow__slide"><div class="photo-slot"><img src="2.png" alt="IAAS LC UNS foto 2"><div class="photo-slot__hint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M21 16l-5-5-4 4-3-3-5 5"/></svg><span>Foto 2 / 8</span></div></div></div>
+        <div class="slideshow__slide"><div class="photo-slot"><img src="3.png" alt="IAAS LC UNS foto 3"><div class="photo-slot__hint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M21 16l-5-5-4 4-3-3-5 5"/></svg><span>Foto 3 / 8</span></div></div></div>
+        <div class="slideshow__slide"><div class="photo-slot"><img src="4.png" alt="IAAS LC UNS foto 4"><div class="photo-slot__hint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M21 16l-5-5-4 4-3-3-5 5"/></svg><span>Foto 4 / 8</span></div></div></div>
+        <div class="slideshow__slide"><div class="photo-slot"><img src="5.png" alt="IAAS LC UNS foto 5"><div class="photo-slot__hint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M21 16l-5-5-4 4-3-3-5 5"/></svg><span>Foto 5 / 8</span></div></div></div>
+        <div class="slideshow__slide"><div class="photo-slot"><img src="6.png" alt="IAAS LC UNS foto 6"><div class="photo-slot__hint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M21 16l-5-5-4 4-3-3-5 5"/></svg><span>Foto 6 / 8</span></div></div></div>
+        <div class="slideshow__slide"><div class="photo-slot"><img src="7.jpg" alt="IAAS LC UNS foto 7"><div class="photo-slot__hint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M21 16l-5-5-4 4-3-3-5 5"/></svg><span>Foto 7 / 8</span></div></div></div>
+        <div class="slideshow__slide"><div class="photo-slot"><img src="8.8.jpg" alt="IAAS LC UNS foto 8"><div class="photo-slot__hint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M21 16l-5-5-4 4-3-3-5 5"/></svg><span>Foto 8 / 8</span></div></div></div>
+      </div>
+      <button class="slideshow__nav prev" id="slidePrev" aria-label="Previous photo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+      </button>
+      <button class="slideshow__nav next" id="slideNext" aria-label="Next photo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     TITLE + STATS
+============================================================ -->
+<section class="story-head">
+  <div class="container">
+    <p class="eyebrow reveal">Organizational Experience</p>
+    <h1 class="story-head__title reveal">IAAS LC UNS</h1>
+    <div class="story-head__stats reveal">
+       <span>Universitas Sebelas Maret</span>
+       <span>Head of Department — PRP</span>
+       <span>1 year</span>
+     </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     OVERVIEW
+============================================================ -->
+<section class="story-overview">
+  <div class="container">
+    <p class="reveal">The International Association of Students in Agricultural and Related Sciences (IAAS) is a global student organization connecting students in agriculture and related sciences through knowledge exchange, professional development, collaboration, and international engagement. At Universitas Sebelas Maret, IAAS LC UNS serves as a local chapter that provides students with opportunities to develop organizational, professional, and collaborative skills.</p>
+    <p class="reveal">I served in the Public Relation & Partnership (PRP) Department, which focuses on organizational communication, branding, digital content, and building relationships with external partners. The department consists of Public Relations and Partnership teams, working together to strengthen the organization's visibility and external collaboration.</p>
+    <p class="reveal">Led a 10-member PRP team and supervised 3 managers throughout a one-year organizational period. I evaluated departmental performance, developed and implemented approximately 4 work programs, and translated the organization's vision and objectives into strategic communication and partnership initiatives. I also supported the development of visual identities and logos aligned with the organization's vision and mission, managed social media activities across Instagram and LinkedIn, and facilitated collaboration with other departments and external stakeholders.</p>
+    <p class="reveal">Successfully delivered 24 of 27 routine Instagram posts, achieving an 88.9% content fulfillment rate while also handling additional content requests from other departments. The account generated 94,000+ impressions and 2,100+ engagements within a 90-day period. Beyond digital performance, the experience contributed to a more structured PRP workflow through program evaluation, strategic planning, and coordinated team execution.</p>
+      </div>
+</section>
+
+
+
+<!-- ============================================================
+     RELATED
+============================================================ -->
+<section class="related">
+  <div class="container">
+    <div class="related__head reveal">
+      <h2>Related</h2>
+    </div>
+    <div class="related__list reveal">
+      <a class="related__item" href="https://iaasworld.org/" target="_blank" rel="noopener">
+        <div class="related__item-text">
+          <p class="related__item-title">IAAS LC UNS</p>
+          <p class="related__item-domain">IAAS World</p>
+        </div>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M7 7h10v10"/></svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     FOOTER
+============================================================ -->
+<footer>
+  <div class="container">
+    <div class="footer__row">
+      <div>
+        <p class="footer__name">Sultan Rafli</p>
+        <div class="footer__meta">
+          <span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s7-6.2 7-12a7 7 0 10-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="10" r="2.4"/></svg>
+            Tangerang, Indonesia
+          </span>
+          <a href="mailto:sultn.raf@gmail.com">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>
+            sultn.raf@gmail.com
+          </a>
+          <a href="tel:+6281327269489">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.9v3a2 2 0 01-2.2 2 19.8 19.8 0 01-8.6-3 19.5 19.5 0 01-6-6A19.8 19.8 0 012.1 4.2 2 2 0 014.1 2h3a2 2 0 012 1.7c.1 1 .3 2 .6 3a2 2 0 01-.5 2.1L8 10a16 16 0 006 6l1.2-1.2a2 2 0 012.1-.5c1 .3 2 .5 3 .6a2 2 0 011.7 2z"/></svg>
+            +(62) 813-2726-9489
+          </a>
+        </div>
+      </div>
+
+      <div class="footer__right">
+        <div class="footer__social">
+          <a href="#" aria-label="LinkedIn" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M7 10v7M7 7v.01M11 17v-4.5a2.5 2.5 0 015 0V17M11 12.5V17"/></svg>
+          </a>
+          <a href="#" aria-label="Instagram" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer__copyright">© 2026 Sultan Rafli. All rights reserved.</div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  const header = document.getElementById('siteHeader');
+  window.addEventListener('scroll', () => {
+    header.classList.toggle('scrolled', window.scrollY > 12);
+  }, { passive:true });
+
+  const toggle = document.getElementById('navToggle');
+  const links = document.getElementById('navLinks');
+  toggle.addEventListener('click', () => {
+    toggle.classList.toggle('open');
+    links.classList.toggle('open');
+  });
+
+  const revealEls = document.querySelectorAll('.reveal');
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if(entry.isIntersecting){
+        entry.target.classList.add('in-view');
+        revealObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold:0.15 });
+  revealEls.forEach(el => revealObserver.observe(el));
+
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---------- slideshow: seamless loop both directions ---------- */
+  const slideTrack = document.getElementById('slideTrack');
+  const realSlides = Array.from(slideTrack.children);
+  const realTotal = realSlides.length;
+  slideTrack.insertBefore(realSlides[realTotal - 1].cloneNode(true), slideTrack.firstChild);
+  slideTrack.appendChild(realSlides[0].cloneNode(true));
+
+  const slideshow = document.getElementById('slideshow');
+  const slidePrev = document.getElementById('slidePrev');
+  const slideNext = document.getElementById('slideNext');
+  const SLIDE_MS = 550;
+  let slideIndex = 1;
+  let slideTimer;
+
+  function renderSlide(withTransition){
+    slideTrack.style.transition = withTransition ? '' : 'none';
+    slideTrack.style.transform = 'translateX(-' + (slideIndex * 100) + '%)';
+  }
+  function nextSlide(){
+    slideIndex++;
+    renderSlide(true);
+    if(slideIndex === realTotal + 1){
+      setTimeout(() => { slideIndex = 1; renderSlide(false); void slideTrack.offsetWidth; }, reducedMotion ? 0 : SLIDE_MS);
+    }
+  }
+  function prevSlide(){
+    slideIndex--;
+    renderSlide(true);
+    if(slideIndex === 0){
+      setTimeout(() => { slideIndex = realTotal; renderSlide(false); void slideTrack.offsetWidth; }, reducedMotion ? 0 : SLIDE_MS);
+    }
+  }
+  function startSlideTimer(){ if(reducedMotion) return; slideTimer = setInterval(nextSlide, 4200); }
+  function stopSlideTimer(){ clearInterval(slideTimer); }
+  function restartSlideTimer(){ stopSlideTimer(); startSlideTimer(); }
+
+  slideNext.addEventListener('click', () => { nextSlide(); restartSlideTimer(); });
+  slidePrev.addEventListener('click', () => { prevSlide(); restartSlideTimer(); });
+  slideshow.addEventListener('mouseenter', stopSlideTimer);
+  slideshow.addEventListener('mouseleave', startSlideTimer);
+
+  renderSlide(false);
+  startSlideTimer();
+})();
+</script>
+</body>
+</html>
